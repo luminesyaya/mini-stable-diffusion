@@ -20,6 +20,8 @@ class MiniPipeline:
     def __init__(
         self,
         model_path: str = MODEL_PATH,
+        lora_path: Optional[str] = None,
+        lora_weight_name: str = "pytorch_lora_weights.safetensors",
         device: str = DEVICE,
         dtype: torch.dtype = DTYPE 
         ):
@@ -31,6 +33,9 @@ class MiniPipeline:
         self.model_path = model_path
         
         self._load_models()
+        
+        if lora_path is not None:
+            self._load_lora_weights(lora_path, lora_weight_name)
         
     def _load_models(self):
         logger.info("Loading all models...")
@@ -56,6 +61,19 @@ class MiniPipeline:
         )
         
         logger.info("All models loaded successfully.")
+        
+    #   """Load LoRA weights into the UNet model."""
+    def _load_lora_weights(self, lora_path: str, weight_name: str):
+        logger.info(f"Loading LoRA weights from: {lora_path}")
+        
+        # 使用 diffusers 内置的 LoRA 加载器
+        self.unet.load_attn_procs(
+            lora_path,
+            weight_name=weight_name
+        )
+        
+        logger.info("LoRA weights loaded successfully.")    
+    
         
     # 编码文本
     def encode_prompt(self, prompt: str, negative_prompt: str = ""):

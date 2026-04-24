@@ -4,36 +4,46 @@ from mini_pipeline_00 import MiniPipeline
 from config import MODEL_PATH, DEVICE, DTYPE
 from PIL import Image
 
-_pipeline = None
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-def get_pipeline():
-    global _pipeline
-    if _pipeline is None:
-        _pipeline = MiniPipeline(
-            model_path=MODEL_PATH,
-            device=DEVICE,
-            dtype=getattr(torch, DTYPE)
-        )
-    return _pipeline
 
-def generate_image(prompt:str, output_path:str, negative_prompt: str = ""): # , lora_path: str = None, lora_scale: float = 0.75
-    pipeline = get_pipeline()
-    
-    # if lora_path is not None:
-    #     logger.info(f"Using LoRA: {lora_path}, scale={lora_scale}")
-    #     pipeline.load_lora(lora_path, scale=lora_scale)
-    
+def get_pipeline(
+    lora_path: str = None,
+    lora_weight_name: str = "pytorch_lora_weights.safetensors",
+):
+    """
+    每次都创建一个新的 MiniPipeline，
+    避免 LoRA 权重残留问题
+    """
+    return MiniPipeline(
+        model_path=MODEL_PATH,
+        lora_path=lora_path,
+        lora_weight_name=lora_weight_name,
+        device=DEVICE,
+        dtype=getattr(torch, DTYPE),
+    )
+
+
+def generate_image(
+    prompt: str,
+    output_path: str,
+    negative_prompt: str = "",
+    lora_path: str = None,
+):
+    logger.info(f"Generating image with LoRA: {lora_path}")
+
+    pipeline = get_pipeline(lora_path=lora_path)
+
     image = pipeline(
         prompt,
         negative_prompt=negative_prompt,
         num_steps=50,
         guidance_scale=7.5,
-        seed=42
+        seed=42,
     )
-    image = Image.fromarray((image * 255).astype('uint8'))
+
+    image = Image.fromarray((image * 255).astype("uint8"))
     image.save(output_path)
-    
-    # if lora_path is not None:
-    #     pipeline.unload_lora()
+
+    logger.info(f"Image saved to {output_path}")
