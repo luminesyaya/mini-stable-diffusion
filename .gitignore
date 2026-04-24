@@ -1,0 +1,38 @@
+# =========================
+# Virtual environments
+# =========================
+sd-env/
+diffusers-src-env/
+venv/
+.env/
+.venv/
+
+# =========================
+# Diffusers source / backup
+# =========================
+diffusers_backup/
+
+# =========================
+# Models & outputs
+# =========================
+models/
+outputs/
+checkpoints/
+*.ckpt
+*.safetensors
+*.bin
+
+# =========================
+# Python cache
+# =========================
+__pycache__/
+*.pyc
+*.pyo
+*.so
+
+# =========================
+# OS / IDE
+# =========================
+.DS_Store
+.vscode/
+.idea/

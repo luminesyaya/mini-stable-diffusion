@@ -1,0 +1,44 @@
+[build-system]
+requires = ["setuptools>=45", "wheel", "setuptools_scm[toml]>=6.2"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "mini-stable-diffusion"
+version = "0.1.0"
+description = "Local Stable Diffusion v1.5 setup with custom MiniPipeline"
+authors = [{ name = "luminesyaya", email = "2931287530@qq.com" }]
+readme = "README.md"
+requires-python = ">=3.8"
+license = { file = "LICENSE" }
+
+dependencies = [
+    # PyTorch (CUDA 12.1, 与你安装命令完全一致)
+    "torch>=2.0.0",
+    "torchvision",
+    "torchaudio",
+
+    # Diffusers（你使用的是源码 clone + pip install -e .）
+    "diffusers>=0.26.0",
+
+    # Transformers & Hub（修复你遇到的 DDUFEntry 错误）
+    "transformers>=4.30.0",
+    "huggingface-hub>=0.19.3,<1.0",
+
+    # 图像与数值计算
+    "Pillow>=9.0.0",
+    "numpy>=1.24.0",
+
+    # 推荐：避免 pickle 警告
+    "safetensors>=0.4.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "black",
+    "flake8",
+    "pytest",
+    "pre-commit",
+]
+
+[tool.setuptools.packages.find]
+where = ["."]
